@@ -1,9 +1,9 @@
 import Foundation
 
 public class GildedRose {
-    private static let agedBrieString = "Aged Brie"
-    private static let backstagePassString = "Backstage passes to a TAFKAL80ETC concert"
-    private static let sulfurasString = "Sulfuras, Hand of Ragnaros"
+    private static let agedBrieString = "aged brie"
+    private static let backstagePassString = "backstage passes"
+    private static let sulfurasString = "sulfuras"
     private static let conjuredString = "conjured"
     
     private static let minimumQuality = 0
@@ -15,8 +15,12 @@ public class GildedRose {
         self.items = items
     }
     
+    private func checkIfItemNameContainsString(_ item: Item, string: String) -> Bool {
+        return item.name.lowercased().range(of: string) != nil
+    }
+    
     private func calculateDegradeRate(_ item: Item, isExpired: Bool) -> Int {
-        let degradeRate = item.name.lowercased().range(of: GildedRose.conjuredString) != nil ? -2 : -1
+        let degradeRate = self.checkIfItemNameContainsString(item, string: GildedRose.conjuredString) ? -2 : -1
         return isExpired ? degradeRate * 2 : degradeRate
     }
     
@@ -43,16 +47,16 @@ public class GildedRose {
     private func updateItemQuality(_ item: Item) {
         let isExpired = item.sellIn < 1
         let itemQualityDegradationAmount = self.calculateDegradeRate(item, isExpired: isExpired)
-        if item.name != GildedRose.agedBrieString && item.name != GildedRose.backstagePassString && item.name != GildedRose.sulfurasString {
+        if !self.checkIfItemNameContainsString(item, string: GildedRose.agedBrieString) && !self.checkIfItemNameContainsString(item, string: GildedRose.backstagePassString) && !self.checkIfItemNameContainsString(item, string: GildedRose.sulfurasString) {
             self.adjustQuality(item, adjustment: itemQualityDegradationAmount)
         }
-        if item.name == GildedRose.agedBrieString {
+        if self.checkIfItemNameContainsString(item, string: GildedRose.agedBrieString) {
             self.adjustQuality(item, adjustment: isExpired ? 2 : 1)
         }
-        if item.name == GildedRose.backstagePassString {
+        if self.checkIfItemNameContainsString(item, string: GildedRose.backstagePassString) {
             self.adjustBackstagePassQuality(item, isExpired: isExpired)
         }
-        if item.name != GildedRose.sulfurasString {
+        if !self.checkIfItemNameContainsString(item, string: GildedRose.sulfurasString) {
             item.sellIn = item.sellIn - 1
         }
     }
